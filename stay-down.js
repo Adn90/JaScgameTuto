@@ -22,17 +22,26 @@
     }
 
     function update () {
-        player.velocity_y += gravity;
-        player.velocity_y *= friction;
-        player.y += player.velocity_y;
 
-        collideTop(player, ground.top);
+        if (controller.left) player.moveLeft();
+        if (controller.right) player.moveRight();
+        if (controller.up) player.jump();
+
+        player.updatePosiiton(gravity, friction)
+
+        if (collideTop(player, ground.top)) {
+            
+            player.ground();
+        }
     }
 
     function collideTop(rectangle, top) {
         if (rectangle.getBottom() > top) {
             rectangle.setBottom(top);
+
+            return true; // o obejto que herda rectangle, está 'grounded'
         }
+        return false;
     }
 
     function render() {
@@ -59,6 +68,24 @@
     display.canvas.width = world_width;
     display.canvas.height = world_height;
 
+    function keyDownUp(event) {
+        // evita comportamento padrão, como usar setas para scroll
+        event.preventDefault();
+
+        let state = event.type == 'keydown'; // estado da tecla
+
+        // console.log(event.type); verifica qual é o evento de apertar um botão e soltar
+        // console.log(event.keyCode); jeito simples de descobrir o cód ascII das teclas 
+        switch(event.keyCode) {
+
+            case 37: controller.left = state; break;
+            case 38: controller.up = state; break;
+            case 39: controller.right = state; // tip: não percisa de break, já que é o último item
+        }
+    }
+
+    window.addEventListener('keydown', keyDownUp);
+    window.addEventListener('keyup', keyDownUp);
     window.requestAnimationFrame(cycle);
 
 }) ();
