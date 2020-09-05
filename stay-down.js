@@ -27,6 +27,8 @@
         if (controller.right) player.moveRight();
         if (controller.up) player.jump();
 
+        
+
         player.updatePosiiton(gravity, friction)
 
         if (collideTop(player, ground.top)) {
@@ -59,11 +61,6 @@
         display.fillRect(player.x, player.y, player.width, player.height);
     }
 
-    function cycle() {
-        window.requestAnimationFrame(cycle);
-        update();
-        render();
-    }
 
     display.canvas.width = world_width;
     display.canvas.height = world_height;
@@ -75,17 +72,28 @@
         let state = event.type == 'keydown'; // estado da tecla
 
         // console.log(event.type); verifica qual é o evento de apertar um botão e soltar
-        // console.log(event.keyCode); jeito simples de descobrir o cód ascII das teclas 
+        // console.log(event.keyCode); //jeito simples de descobrir o cód ascII das teclas 
         switch(event.keyCode) {
 
             case 37: controller.left = state; break;
             case 38: controller.up = state; break;
-            case 39: controller.right = state; // tip: não percisa de break, já que é o último item
+            case 39: controller.right = state; break;
+            case 27: controller.esc = state; break;
+            case 13: controller.start = state; // tip: não percisa de break, já que é o último item
+        }
+
+        if (controller.start || controller.esc) {
+            
+
+            if (engine.running) engine.stop();
+            else                engine.start();
         }
     }
 
     window.addEventListener('keydown', keyDownUp);
     window.addEventListener('keyup', keyDownUp);
-    window.requestAnimationFrame(cycle);
+    
+    engine.setup(update, render)
+    engine.start();
 
 }) ();
